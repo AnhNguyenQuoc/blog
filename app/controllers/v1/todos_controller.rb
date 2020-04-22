@@ -1,13 +1,14 @@
+module V1
 class TodosController < ApplicationController
   before_action :set_todo, only: [:show, :update, :destroy]
 
   def index
-    @todos = Todo.all 
+    @todos = current_user.todos.paginate(page: params[:page], per_page: 20)
     json_response(@todos)
   end
   
   def create 
-    @todo = Todo.create!(todo_params)
+    @todo = current_user.todos.create!(todo_params)
     json_response(@todo, :created)
   end
 
@@ -28,10 +29,11 @@ class TodosController < ApplicationController
   private
 
   def todo_params
-    params.permit(:title, :created_by)
+    params.permit(:title)
   end
 
   def set_todo
     @todo = Todo.find(params[:id])
   end
+end
 end
